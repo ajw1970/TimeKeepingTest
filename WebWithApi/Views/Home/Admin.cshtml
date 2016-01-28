@@ -1,0 +1,133 @@
+﻿@section headScripts {
+    <script src="~/AppScripts/TimeKeeping/users-model.js"></script>
+    <script src="~/AppScripts/TimeKeeping/users-dataSource.js"></script>
+    <script src="~/AppScripts/TimeKeeping/users-viewModel.js"></script>
+
+    <script src="~/AppScripts/TimeKeeping/projects-model.js"></script>
+    <script src="~/AppScripts/TimeKeeping/projects-dataSource.js"></script>
+    <script src="~/AppScripts/TimeKeeping/projects-viewModel.js"></script>
+}
+
+<div id="summaryView">
+    <div class="panel panel-default">
+        <div class="panel-heading">Summary</div>
+        <div class="panel-body">
+            <div id="summary"></div>
+        </div>
+    </div>
+</div>
+
+<div id="projectsView">
+    <div class="panel panel-default">
+        <div class="panel-heading" data-bind="html: title"></div>
+        <div class="panel-body">
+            <div id="projects"></div>
+        </div>
+    </div>
+</div>
+
+<div id="usersView">
+    <div class="panel panel-default">
+        <div class="panel-heading" data-bind="html: title"></div>
+        <div class="panel-body">
+            <div id="users"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var departmentEntriesDataSource = new kendo.data.DataSource({
+        transport: {
+            read: "/api/TimeKeepingProjects/MyDepartmentSummary/",
+        },
+        group: {
+            field: "project",
+            aggregates: [
+                { field: "hours", aggregate: "sum" }
+            ]
+        },
+        aggregate: [
+            { field: "hours", aggregate: "sum" }
+        ],
+        error: function projectsTransportError(e) {
+            console.log(e.xhr.responseText);
+        }
+    });
+
+    $("#summary").kendoGrid({
+        filterable: true,
+        dataSource: departmentEntriesDataSource,
+        columns: [
+            {
+                field: "year",
+                title: "Year"
+            },
+            {
+                field: "month",
+                title: "Month"
+            },
+            {
+                field: "project",
+                title: "Project",
+            },
+            {
+                field: "userName",
+                title: "Person"
+            }
+            ,
+            {
+                field: "hours",
+                title: "Hours",
+                format: "{0:n2}",
+                footerTemplate: "Total Hours: #: kendo.format('{0:n2}', sum) #",
+                groupFooterTemplate: "Hours: #: kendo.format('{0:n2}', sum) #"
+            }
+        ]
+    });
+
+    kendo.bind($("#projectsView"), projectsViewModel);
+    $("#projects").kendoGrid({
+        editable: "popup",
+        selectable: "row",
+        toolbar: [{ name: 'create', text: 'Add' }],
+        dataSource: projectsViewModel.projects,
+        columns: [
+                    {
+                        field: "saleNo",
+                        title: "Sale#"
+                    },
+                    {
+                        field: "description",
+                        title: "Description"
+                    },
+                    {
+                        field: "active",
+                        title: "Active"
+                    },
+                    {
+                        command: ["edit", "destroy"]
+                    }
+        ]
+    });
+
+    kendo.bind($("#usersView"), usersViewModel);
+    $("#users").kendoGrid({
+        editable: "popup",
+        selectable: "row",
+        toolbar: [{ name: 'create', text: 'Add' }],
+        dataSource: usersViewModel.users,
+        columns: [
+                    {
+                        field: "login",
+                        title: "Login"
+                    },
+                    {
+                        field: "displayName",
+                        title: "Display Name"
+                    },
+                    {
+                        command: ["edit", "destroy"]
+                    }
+        ]
+    });
+</script>
