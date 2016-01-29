@@ -6,6 +6,14 @@ var getTitle = function (id, projects) {
     })[0] || {}).text || "No title";
 }
 
+function hoursFromRange(start, end) {
+    var ms = end - start;
+    var seconds = ms / 1000;
+    var minutes = seconds / 60;
+    var hours = minutes / 60;
+    return hours;
+}
+
 var userEntriesSchedulerDataSource = new kendo.data.SchedulerDataSource({
     schema: {
         model: userEntriesSchedulerModel,
@@ -29,6 +37,7 @@ var userEntriesSchedulerDataSource = new kendo.data.SchedulerDataSource({
                     entry.ended = new Date(entry.started);
                     entry.ended.setTime(entry.started.getTime() + (15 * 60000));                    
                 }
+                entry.hours = hoursFromRange(entry.started, entry.ended);
                 entry.userId = data[i].userId;
                 entry.projectId = data[i].projectId;
                 entry.title = getTitle(entry.projectId, projects);

@@ -9,9 +9,10 @@
         .k-edit-form-container {
             padding-left: 12px;
         }
-        .k-edit-form-container .k-dropdown {
-            width: 450px;
-        }
+
+            .k-edit-form-container .k-dropdown {
+                width: 450px;
+            }
     </style>
 }
 
@@ -35,6 +36,9 @@
         <label>Project: <input data-text-field="text" data-value-field="value" data-role="dropdownlist" name="projectId" data-source="userEntryProjectsDataSource.data().toJSON()" /></label>
     </p>
     <p>
+        <label>Hours: <input id="hoursEntry" name="hours" type="number" min="0.25" max="18.0" step="0.25" data-bind="events: { change: setEnd }"></label>
+    </p>
+    <p>
         <label>Start: <input data-role="datetimepicker" name="start" data-interval="15" /></label>
     </p>
     <p>
@@ -51,7 +55,14 @@
 
 <script>
     kendo.bind($("#userEntriesView"), userEntriesViewModel);
-    var timesheet;
+
+    function setEnd(e) {
+        debugger;
+    }
+
+    function editStarted(e) {
+        e.event.hours = hoursFromRange(e.event.start, e.event.end);
+    }
 
     function ms2Time(ms) {
         var secs = ms / 1000;
@@ -64,29 +75,30 @@
         return hours + ":" + kendo.toString(minutes, "00");
     }
 
-    function totalHoursForDate(date) {
-        if (timesheet) {
-            var from = new Date(date);
-            var to = new Date(from);
-            to.setDate(to.getDate() + 1);
-            var entries = timesheet.occurrencesInRange(from, to);
-            //return entries.length;
-            var hours = 0;
-            debugger;
-            for (var i = 0; i < entries.length; i++) {
-                var entry = entries[i];
-                debugger;
-            }
-            return hours;
-        } else {
-            return "---";
-        }
-    }
+    //function totalHoursForDate(date) {
+    //    if (timesheet) {
+    //        var from = new Date(date);
+    //        var to = new Date(from);
+    //        to.setDate(to.getDate() + 1);
+    //        var entries = timesheet.occurrencesInRange(from, to);
+    //        //return entries.length;
+    //        var hours = 0;
+    //        debugger;
+    //        for (var i = 0; i < entries.length; i++) {
+    //            var entry = entries[i];
+    //            debugger;
+    //        }
+    //        return hours;
+    //    } else {
+    //        return "---";
+    //    }
+    //}
 
-   var scheduler = $("#timesheet").kendoScheduler({
+    var scheduler = $("#timesheet").kendoScheduler({
         editable: {
             template: $("#editor").html()
         },
+        edit: editStarted,
         minorTickCount: 4,
         showWorkHours: true,
         workDayStart: new Date("2015/12/28 06:00 AM"),
@@ -106,5 +118,5 @@
             var projects = userEntryProjectsDataSource.data().toJSON();
             e.event.title = getTitle(e.event.projectId, projects);
         }
-   });
+    });
 </script>
