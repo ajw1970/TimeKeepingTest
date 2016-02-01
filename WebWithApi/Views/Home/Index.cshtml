@@ -1,18 +1,44 @@
 ﻿@section headScripts {
-    <script src="~/AppScripts/TimeKeeping/userEntryProjects-dataSource.js"></script>
-    <script src="~/AppScripts/TimeKeeping/userEntries-model.js"></script>
-    <script src="~/AppScripts/TimeKeeping/userEntries-dataSource.js"></script>
-    <script src="~/AppScripts/TimeKeeping/userEntries-viewModel.js"></script>
-    <script src="~/AppScripts/TimeKeeping/userEntriesScheduler-model.js"></script>
-    <script src="~/AppScripts/TimeKeeping/userEntriesScheduler-dataSource.js"></script>
-    <style>
-        .k-edit-form-container {
-            padding-left: 12px;
-        }
-        .k-edit-form-container .k-dropdown {
-            width: 450px;
-        }
-    </style>
+<script src="~/AppScripts/TimeKeeping/userEntryProjects-dataSource.js"></script>
+<script src="~/AppScripts/TimeKeeping/userEntries-model.js"></script>
+<script src="~/AppScripts/TimeKeeping/userEntries-dataSource.js"></script>
+<script src="~/AppScripts/TimeKeeping/userEntries-viewModel.js"></script>
+<script src="~/AppScripts/TimeKeeping/userEntriesScheduler-model.js"></script>
+<script src="~/AppScripts/TimeKeeping/userEntriesScheduler-dataSource.js"></script>
+<style>
+    .k-edit-form-container {
+        padding-left: 12px;
+    }
+
+    .k-edit-form-container .k-dropdown {
+        width: 450px;
+    }
+
+    #newEntryForm {
+        background-color: #f5f5f5;
+        border-style: solid;
+        border-color: rgb(221, 221, 221);
+        border-radius: 3px;
+        border-width: 1px;
+        padding: 5px 0 0 10px;
+        margin-top: 1em;
+        margin-bottom: 1em;
+    }
+
+    #newEntryForm .k-dropdown {
+        width: 325px;
+    }
+
+    #newEntryForm li {
+        list-style: none;
+        display: inline;
+        padding-right: 1em;
+    }
+
+    #newEntryForm ul {
+        padding-left: 0;
+    }
+</style>
 }
 
 @if (ViewBag.IsTimeAdmin) {
@@ -20,6 +46,29 @@
 }
 
 <p>@User.Identity.Name</p>
+
+<div id="newEntryForm">
+    <ul>
+        <li>
+            <label for="title">Project:</label>
+            <input id="title" data-text-field="text" data-value-field="value" data-role="dropdownlist" data-bind="value: projectId" data-source="userEntryProjectsDataSource.data().toJSON()" />
+        </li>
+
+        <li>
+            <label for="start">Date:</label>
+            <input id="start" data-role="datetimepicker" data-bind="value: start">
+        </li>
+
+        <li>
+            <label for="hours">Hours:</label>
+            <input id="hours" data-role="numerictextbox" min="0.25" max="24.0" step="0.25" data-bind="value: hours">
+        </li>
+
+        <li>
+            <input type="submit" value="Add" data-bind="click: add">
+        </li>
+    </ul>
+</div>
 
 <div id="userEntriesView">
     <div class="panel panel-default">
@@ -35,7 +84,7 @@
         <label>Project: <input data-text-field="text" data-value-field="value" data-role="dropdownlist" name="projectId" data-source="userEntryProjectsDataSource.data().toJSON()" /></label>
     </p>
     <p>
-        <label>Hours: <input id="hoursEntry" class="k-textbox" name="hours" type="number" min="0.25" max="18.0" step="0.25" data-bind="value: hours, events: { change: setEnd }"></label>
+        <label>Hours: <input id="hoursEntry" class="k-textbox" data-bind="value: hours, events: { change: setEnd }" type="number" min="0.25" max="24.0" step="0.25" ></label>
     </p>
     <p>
         <label>Start: <input data-role="datetimepicker" name="start" data-interval="15" /></label>
@@ -53,6 +102,37 @@
 </script>
 
 <script>
+    var newEntryVM = kendo.observable({
+        "id": 0,
+        "projectId": 0,
+        "title": "",
+        "start": new Date(),
+        "hours": 0.25,
+        "setStart": function (e) {
+            newEntryVM.set("start", e.date);
+        },
+        "add": function () {
+            debugger;
+            var projects = userEntryProjectsDataSource.data().toJSON();
+            this.set("title", getTitle(this.get("projectId"), projects));
+            var end = new Date();
+            end.setTime(this.get("start").getTime() + this.get("hours") * 60 * 60 * 1000);
+            this.set("id", this.get("id") + 1);
+            var event = {
+                "id": this.get("id"),
+                "projectId": this.get("projectId"),
+                "title": this.get("title"),
+                "start": this.get("start"),
+                "end": end
+            }
+            this.set("title", "");
+            this.set("start", "");
+            this.set("hours", 0.25);
+            userEntriesSchedulerDataSource.add(event);
+        }
+    });
+    kendo.bind($("#newEntryForm"), newEntryVM);
+
     kendo.bind($("#userEntriesView"), userEntriesViewModel);
 
     function setEnd(e) {
@@ -62,8 +142,10 @@
     function editStarted(e) {
         //debugger;
         //$(".k-edit-form-container").width(750);
-        e.event.hours = hoursFromRange(e.event.start, e.event.end);
-        $("#hoursEntry").val(e.event.hours);
+        var hours = hoursFromRange(e.event.start, e.event.end);
+        e.event.set("hours", hours);
+        //$("#hoursEntry").val(e.event.hours);
+        debugger;
     }
 
     function ms2Time(ms) {
@@ -98,8 +180,12 @@
 
     var scheduler = $("#timesheet").kendoScheduler({
         editable: {
+            window: {
+                title: "Time Log Entry"
+            },
             template: $("#editor").html()
         },
+        allDaySlot: false,
         edit: editStarted,
         minorTickCount: 4,
         showWorkHours: true,
