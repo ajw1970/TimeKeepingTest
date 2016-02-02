@@ -15,7 +15,8 @@ var userEntriesSchedulerModel = new kendo.data.SchedulerEvent.define({
         },
         hours: {
             type: "number",
-            validation: { required: true }
+            validation: { required: true },
+            defaultValue: 0.25
         },
         start: {
             from: "started",

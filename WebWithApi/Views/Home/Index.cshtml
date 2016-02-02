@@ -84,13 +84,13 @@
         <label>Project: <input data-text-field="text" data-value-field="value" data-role="dropdownlist" name="projectId" data-source="userEntryProjectsDataSource.data().toJSON()" /></label>
     </p>
     <p>
-        <label>Hours: <input id="hoursEntry" class="k-textbox" data-bind="value: hours, events: { change: setEnd }" type="number" min="0.25" max="24.0" step="0.25" ></label>
+        <label>Hours: <input id="hoursEntry" class="k-textbox" name="hours" type="number" min="0.25" max="24.0" step="0.25" ></label>
     </p>
     <p>
-        <label>Start: <input data-role="datetimepicker" name="start" data-interval="15" /></label>
+        <label>Start: <input id="startEntry" data-role="datetimepicker" name="start" data-interval="15" /></label>
     </p>
     <p>
-        <label>End: <input data-role="datetimepicker" name="end" data-interval="15" /></label>
+        <label>End: <input id="endEntry" data-role="datetimepicker" name="end" data-interval="15" /></label>
     </p>
 </script>
 
@@ -137,15 +137,36 @@
 
     function setEnd(e) {
         debugger;
+        e.event.set("end", datePlusHours(e.event.start, e.event.hours));
+    }
+
+    function setHours(e) {
+        debugger;
+        e.event.set("hours", hoursFromRange(e.event.get("start"), e.event.get("end")));
     }
 
     function editStarted(e) {
         //debugger;
         //$(".k-edit-form-container").width(750);
-        var hours = hoursFromRange(e.event.start, e.event.end);
-        e.event.set("hours", hours);
-        //$("#hoursEntry").val(e.event.hours);
-        debugger;
+        e.event.set("hours", hoursFromRange(e.event.start, e.event.end));
+
+        var hoursEntry = e.container.find("#hoursEntry");
+        hoursEntry.on("change", function () { setEnd(e); });
+
+        var startEntry = e.container.find("#startEntry");
+        startEntry.on("close", function () { setHours(e); });
+
+        var endEntry = e.container.find("#endEntry");
+        endEntry.on("close", function () { setHours(e); });
+    }
+
+    function datePlusHours(date, hoursToAdd) {
+        var ms = hoursToAdd * 60 * 60 * 1000,
+            newDate = new Date();
+
+        newDate.setTime(date.getTime() + ms);
+
+        return newDate;
     }
 
     function ms2Time(ms) {
