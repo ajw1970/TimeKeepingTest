@@ -141,6 +141,34 @@
         e.event.set("hours", hoursFromRange(e.event.get("start"), e.event.get("end")));
     }
 
+    function setStartTimes(e, o) {
+        var dates = [],
+            endDay = e.event.end.getDay(),
+            endTime = e.event.end.getTime(),
+            date = new Date(endTime - 900000)
+
+        while (date.getDay() === endDay) {
+            dates.push(new Date(date));
+            date.setTime(date.getTime() - 900000);
+        }
+
+        o.sender.timeView.dataBind(dates);
+    }
+
+    function setEndTimes(e, o) {
+        var dates = [],
+            startDay = e.event.start.getDay(),
+            startTime = e.event.start.getTime(),
+            date = new Date(startTime + 900000)
+
+        while (date.getDay() === startDay) {
+            dates.push(new Date(date));
+            date.setTime(date.getTime() + 900000);
+        }
+
+        o.sender.timeView.dataBind(dates);
+    }
+
     function editStarted(e) {
         //debugger;
         //$(".k-edit-form-container").width(750);
@@ -151,9 +179,21 @@
 
         var startEntry = e.container.find("#startEntry").getKendoDateTimePicker();
         startEntry.bind("close", function () { setHours(e); });
+        startEntry.bind("open", function (o) {
+            if (o.view === "time") {
+                setStartTimes(e, o);
+            }
+        });
 
         var endEntry = e.container.find("#endEntry").getKendoDateTimePicker();
-        endEntry.bind("close", function () { setHours(e); });
+        endEntry.bind("close", function () {
+            setHours(e);
+        });
+        endEntry.bind("open", function (o) {
+            if (o.view === "time") {
+                setEndTimes(e, o);
+            }
+        });
     }
 
     function datePlusHours(date, hoursToAdd) {
