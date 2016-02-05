@@ -6,6 +6,7 @@
     <script src="~/AppScripts/TimeKeeping/projects-model.js"></script>
     <script src="~/AppScripts/TimeKeeping/projects-dataSource.js"></script>
     <script src="~/AppScripts/TimeKeeping/projects-viewModel.js"></script>
+    <script src="~/Scripts/jszip.min.js"></script>
 }
 
 <div id="summaryView">
@@ -55,24 +56,44 @@
     });
 
     $("#summary").kendoGrid({
+        toolbar: ["excel"],
+        excel: {
+            fileName: "TimeKeepingExport.xlsx"
+        },
         filterable: true,
         dataSource: departmentEntriesDataSource,
         columns: [
             {
                 field: "year",
-                title: "Year"
+                title: "Year",
+                filterable: {
+                    multi: true,
+                    search: true,
+                }
             },
             {
                 field: "month",
-                title: "Month"
+                title: "Month",
+                filterable: {
+                    multi: true,
+                    search: true,
+                }
             },
             {
                 field: "project",
                 title: "Project",
+                filterable: {
+                    multi: true,
+                    search: true,
+                }
             },
             {
                 field: "userName",
-                title: "Person"
+                title: "Person",
+                filterable: {
+                    multi: true,
+                    search: true,
+                }
             }
             ,
             {

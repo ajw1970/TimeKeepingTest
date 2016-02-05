@@ -1,51 +1,49 @@
 ﻿@section headScripts {
-<script src="~/AppScripts/TimeKeeping/userEntryProjects-dataSource.js"></script>
-<script src="~/AppScripts/TimeKeeping/userEntries-model.js"></script>
-<script src="~/AppScripts/TimeKeeping/userEntries-dataSource.js"></script>
-<script src="~/AppScripts/TimeKeeping/userEntries-viewModel.js"></script>
-<script src="~/AppScripts/TimeKeeping/userEntriesScheduler-model.js"></script>
-<script src="~/AppScripts/TimeKeeping/userEntriesScheduler-dataSource.js"></script>
-<style>
-    .k-edit-form-container {
-        padding-left: 12px;
-    }
+    <script src="~/AppScripts/TimeKeeping/userEntryProjects-dataSource.js"></script>
+    <script src="~/AppScripts/TimeKeeping/userEntries-model.js"></script>
+    <script src="~/AppScripts/TimeKeeping/userEntries-dataSource.js"></script>
+    <script src="~/AppScripts/TimeKeeping/userEntries-viewModel.js"></script>
+    <script src="~/AppScripts/TimeKeeping/userEntriesScheduler-model.js"></script>
+    <script src="~/AppScripts/TimeKeeping/userEntriesScheduler-dataSource.js"></script>
+    <style>
+        .k-edit-form-container {
+            padding-left: 12px;
+        }
 
-    .k-edit-form-container .k-dropdown {
-        width: 450px;
-    }
+            .k-edit-form-container .k-dropdown {
+                width: 450px;
+            }
 
-    #newEntryForm {
-        background-color: #f5f5f5;
-        border-style: solid;
-        border-color: rgb(221, 221, 221);
-        border-radius: 3px;
-        border-width: 1px;
-        padding: 5px 0 0 10px;
-        margin-top: 1em;
-        margin-bottom: 1em;
-    }
+        #newEntryForm {
+            background-color: #f5f5f5;
+            border-style: solid;
+            border-color: rgb(221, 221, 221);
+            border-radius: 3px;
+            border-width: 1px;
+            padding: 5px 0 0 10px;
+            margin-top: 1em;
+            margin-bottom: 1em;
+        }
 
-    #newEntryForm .k-dropdown {
-        width: 325px;
-    }
+            #newEntryForm .k-dropdown {
+                width: 325px;
+            }
 
-    #newEntryForm li {
-        list-style: none;
-        display: inline;
-        padding-right: 1em;
-    }
+            #newEntryForm li {
+                list-style: none;
+                display: inline;
+                padding-right: 1em;
+            }
 
-    #newEntryForm ul {
-        padding-left: 0;
-    }
-</style>
+            #newEntryForm ul {
+                padding-left: 0;
+            }
+    </style>
 }
 
 @if (ViewBag.IsTimeAdmin) {
     @Html.ActionLink("Admin", "Admin", null, new { @class = "btn btn-default btn-sm btn-primary" })
 }
-
-<p>@User.Identity.Name</p>
 
 <div id="newEntryForm">
     <ul>
@@ -84,7 +82,7 @@
         <label>Project: <input data-text-field="text" data-value-field="value" data-role="dropdownlist" name="projectId" data-source="userEntryProjectsDataSource.data().toJSON()" /></label>
     </p>
     <p>
-        <label>Hours: <input id="hoursEntry" class="k-textbox" name="hours" type="number" min="0.25" max="24.0" step="0.25" ></label>
+        <label>Hours: <input id="hoursEntry" data-role="numerictextbox" name="hours" min="0.25" max="24.0" step="0.25"></label>
     </p>
     <p>
         <label>Start: <input id="startEntry" data-role="datetimepicker" name="start" data-interval="15" /></label>
@@ -117,31 +115,29 @@
             this.set("title", getTitle(this.get("projectId"), projects));
             var end = new Date();
             end.setTime(this.get("start").getTime() + this.get("hours") * 60 * 60 * 1000);
-            this.set("id", this.get("id") + 1);
             var event = {
-                "id": this.get("id"),
+                "id": 0,
                 "projectId": this.get("projectId"),
                 "title": this.get("title"),
                 "start": this.get("start"),
                 "end": end
             }
-            this.set("title", "");
-            this.set("start", "");
-            this.set("hours", 0.25);
+            //this.set("title", "");
+            //this.set("start", "");
+            //this.set("hours", 0.25);
             userEntriesSchedulerDataSource.add(event);
+            userEntriesSchedulerDataSource.sync();
         }
     });
     kendo.bind($("#newEntryForm"), newEntryVM);
 
     kendo.bind($("#userEntriesView"), userEntriesViewModel);
 
-    function setEnd(e) {
-        debugger;
-        e.event.set("end", datePlusHours(e.event.start, e.event.hours));
+    function setEnd(e, obj) {
+        e.event.set("end", datePlusHours(e.event.start, obj.value()));
     }
 
     function setHours(e) {
-        debugger;
         e.event.set("hours", hoursFromRange(e.event.get("start"), e.event.get("end")));
     }
 
@@ -150,14 +146,14 @@
         //$(".k-edit-form-container").width(750);
         e.event.set("hours", hoursFromRange(e.event.start, e.event.end));
 
-        var hoursEntry = e.container.find("#hoursEntry");
-        hoursEntry.on("change", function () { setEnd(e); });
+        var hoursEntry = e.container.find("#hoursEntry").getKendoNumericTextBox();
+        hoursEntry.bind("spin", function () { setEnd(e, this); });
 
-        var startEntry = e.container.find("#startEntry");
-        startEntry.on("close", function () { setHours(e); });
+        var startEntry = e.container.find("#startEntry").getKendoDateTimePicker();
+        startEntry.bind("close", function () { setHours(e); });
 
-        var endEntry = e.container.find("#endEntry");
-        endEntry.on("close", function () { setHours(e); });
+        var endEntry = e.container.find("#endEntry").getKendoDateTimePicker();
+        endEntry.bind("close", function () { setHours(e); });
     }
 
     function datePlusHours(date, hoursToAdd) {
@@ -228,4 +224,49 @@
             e.event.title = getTitle(e.event.projectId, projects);
         }
     });
+
+    timesheet = scheduler.data("kendoScheduler");
+
+    function dateTimeEditor(container, options) {
+        $('<div id="userEntryProjectTitle"></div>')
+                .appendTo(container)
+                .kendoDropDownList({ dataSource: userEntryProjectsDataSource.data().toJSON() });
+    }
+
+    //$("#userEntries").kendoGrid({
+    //    editable: "popup",
+    //    selectable: "row",
+    //    toolbar: [{ name: 'create', text: 'Add' }],
+    //    dataSource: userEntriesViewModel.entries,
+    //    columns: [
+    //                {
+    //                    field: "projectId",
+    //                    title: "Project",
+    //                    values: userEntryProjectsDataSource.data().toJSON()
+    //                },
+    //                {
+    //                    field: "started",
+    //                    format: "{0:g}",
+    //                    editor: dateTimeEditor
+    //                },
+    //                {
+    //                    field: "ended",
+    //                    format: "{0:g}",
+    //                    editor: dateTimeEditor
+    //                },
+    //                {
+    //                    command: ["edit", "destroy"]
+    //                }
+    //    ],
+    //    edit: function (args) { $(".k-edit-form-container").width(450); }
+    //});
+
+    //function dateTimeEditor(container, options) {
+    //    $('<input data-text-field="' + options.field +
+    //        '" data-value-field="' + options.field +
+    //        '" data-bind="value:' + options.field +
+    //        '" data-format="' + options.format + '"/>')
+    //            .appendTo(container)
+    //            .kendoDateTimePicker({ interval: 15 });
+    //}
 </script>
