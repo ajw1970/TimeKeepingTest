@@ -9,146 +9,163 @@
     <script src="~/Scripts/jszip.min.js"></script>
 }
 
-<div id="summaryView">
-    <div class="panel panel-default">
-        <div class="panel-heading">Summary</div>
-        <div class="panel-body">
-            <div id="summary"></div>
+<div id="tabstrip">
+    <ul>
+        <li class="k-state-active">Summary</li>
+        <li>Projects Admin</li>
+        <li>Users Admin</li>
+    </ul>
+    <div id="summaryView">
+        <div class="panel panel-default">
+            <div class="panel-heading">Summary</div>
+            <div class="panel-body">
+                <div id="summary"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="projectsView">
+        <div class="panel panel-default">
+            <div class="panel-heading" data-bind="html: title"></div>
+            <div class="panel-body">
+                <div id="projects"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="usersView">
+        <div class="panel panel-default">
+            <div class="panel-heading" data-bind="html: title"></div>
+            <div class="panel-body">
+                <div id="users"></div>
+            </div>
         </div>
     </div>
 </div>
 
-<div id="projectsView">
-    <div class="panel panel-default">
-        <div class="panel-heading" data-bind="html: title"></div>
-        <div class="panel-body">
-            <div id="projects"></div>
-        </div>
-    </div>
-</div>
-
-<div id="usersView">
-    <div class="panel panel-default">
-        <div class="panel-heading" data-bind="html: title"></div>
-        <div class="panel-body">
-            <div id="users"></div>
-        </div>
-    </div>
-</div>
 
 <script>
-    var departmentEntriesDataSource = new kendo.data.DataSource({
-        transport: {
-            read: "/api/TimeKeepingProjects/MyDepartmentSummary/",
-        },
-        group: {
-            field: "project",
-            aggregates: [
-                { field: "hours", aggregate: "sum" }
-            ]
-        },
-        aggregate: [
-            { field: "hours", aggregate: "sum" }
-        ],
-        error: function projectsTransportError(e) {
-            console.log(e.xhr.responseText);
-        }
-    });
+    $(document).ready(function () {
+        $("#tabstrip").kendoTabStrip();
 
-    $("#summary").kendoGrid({
-        toolbar: ["excel"],
-        excel: {
-            fileName: "TimeKeepingExport.xlsx"
-        },
-        filterable: true,
-        dataSource: departmentEntriesDataSource,
-        columns: [
-            {
-                field: "year",
-                title: "Year",
-                filterable: {
-                    multi: true,
-                    search: true,
-                }
+        var departmentEntriesDataSource = new kendo.data.DataSource({
+            transport: {
+                read: "/api/TimeKeepingProjects/MyDepartmentSummary/",
             },
-            {
-                field: "month",
-                title: "Month",
-                filterable: {
-                    multi: true,
-                    search: true,
-                }
-            },
-            {
+            group: {
                 field: "project",
-                title: "Project",
-                filterable: {
-                    multi: true,
-                    search: true,
-                }
+                aggregates: [
+                    { field: "hours", aggregate: "sum" }
+                ]
             },
-            {
-                field: "userName",
-                title: "Person",
-                filterable: {
-                    multi: true,
-                    search: true,
+            aggregate: [
+                { field: "hours", aggregate: "sum" }
+            ],
+            error: function projectsTransportError(e) {
+                console.log(e.xhr.responseText);
+            }
+        });
+
+        $("#summary").kendoGrid({
+            toolbar: ["excel"],
+            excel: {
+                fileName: "TimeKeepingExport.xlsx"
+            },
+            filterable: true,
+            dataSource: departmentEntriesDataSource,
+            columns: [
+                {
+                    field: "year",
+                    title: "Year",
+                    filterable: {
+                        multi: true,
+                        search: true,
+                    }
+                },
+                {
+                    field: "month",
+                    title: "Month",
+                    filterable: {
+                        multi: true,
+                        search: true,
+                    }
+                },
+                {
+                    field: "project",
+                    title: "Project",
+                    filterable: {
+                        multi: true,
+                        search: true,
+                    }
+                },
+                {
+                    field: "userName",
+                    title: "Person",
+                    filterable: {
+                        multi: true,
+                        search: true,
+                    }
                 }
-            }
-            ,
-            {
-                field: "hours",
-                title: "Hours",
-                format: "{0:n2}",
-                footerTemplate: "Total Hours: #: kendo.format('{0:n2}', sum) #",
-                groupFooterTemplate: "Hours: #: kendo.format('{0:n2}', sum) #"
-            }
-        ]
-    });
+                ,
+                {
+                    field: "hours",
+                    title: "Hours",
+                    format: "{0:n2}",
+                    footerTemplate: "Total Hours: #: kendo.format('{0:n2}', sum) #",
+                    groupFooterTemplate: "Hours: #: kendo.format('{0:n2}', sum) #"
+                }
+            ]
+        });
 
-    kendo.bind($("#projectsView"), projectsViewModel);
-    $("#projects").kendoGrid({
-        editable: "popup",
-        selectable: "row",
-        toolbar: [{ name: 'create', text: 'Add' }],
-        dataSource: projectsViewModel.projects,
-        columns: [
-                    {
-                        field: "saleNo",
-                        title: "Sale#"
-                    },
-                    {
-                        field: "description",
-                        title: "Description"
-                    },
-                    {
-                        field: "active",
-                        title: "Active"
-                    },
-                    {
-                        command: ["edit", "destroy"]
-                    }
-        ]
-    });
+        kendo.bind($("#projectsView"), projectsViewModel);
+        $("#projects").kendoGrid({
+            editable: "popup",
+            selectable: "row",
+            toolbar: [{ name: 'create', text: 'Add' }],
+            dataSource: projectsViewModel.projects,
+            columns: [
+                        {
+                            field: "saleNo",
+                            title: "Sale#"
+                        },
+                        {
+                            field: "description",
+                            title: "Description"
+                        },
+                        {
+                            field: "active",
+                            title: "Active"
+                        },
+                        {
+                            field: "openingHours",
+                            title: "Opening Hours",
+                            format: "{0:n2}"
+                        },
+                        {
+                            command: ["edit", "destroy"]
+                        }
+            ]
+        });
 
-    kendo.bind($("#usersView"), usersViewModel);
-    $("#users").kendoGrid({
-        editable: "popup",
-        selectable: "row",
-        toolbar: [{ name: 'create', text: 'Add' }],
-        dataSource: usersViewModel.users,
-        columns: [
-                    {
-                        field: "login",
-                        title: "Login"
-                    },
-                    {
-                        field: "displayName",
-                        title: "Display Name"
-                    },
-                    {
-                        command: ["edit", "destroy"]
-                    }
-        ]
+        kendo.bind($("#usersView"), usersViewModel);
+        $("#users").kendoGrid({
+            editable: "popup",
+            selectable: "row",
+            toolbar: [{ name: 'create', text: 'Add' }],
+            dataSource: usersViewModel.users,
+            columns: [
+                        {
+                            field: "login",
+                            title: "Login"
+                        },
+                        {
+                            field: "displayName",
+                            title: "Display Name"
+                        },
+                        {
+                            command: ["edit", "destroy"]
+                        }
+            ]
+        });
     });
 </script>

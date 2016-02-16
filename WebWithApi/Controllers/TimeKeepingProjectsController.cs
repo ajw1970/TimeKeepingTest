@@ -20,6 +20,7 @@ namespace ClearstreamWeb.Controllers {
             get {
                 var admin = db.Users
                     .Where(u => u.Department == user.Department && u.IsDepartmentAdmin)
+                    .OrderBy(u => u.Id)
                     .FirstOrDefault();
 
                 if (admin == null) {

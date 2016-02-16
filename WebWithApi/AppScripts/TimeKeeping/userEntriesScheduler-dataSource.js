@@ -23,7 +23,7 @@ var userEntriesSchedulerDataSource = new kendo.data.SchedulerDataSource({
                 tempArray.push(data);
                 data = tempArray;
             }
-            
+
             var projects = userEntryProjectsDataSource.data().toJSON();
             var entries = [];
             for (var i = 0; i < data.length; i++) {
@@ -35,7 +35,7 @@ var userEntriesSchedulerDataSource = new kendo.data.SchedulerDataSource({
                 } else {
                     //add 15 minutes to entry.started
                     entry.ended = new Date(entry.started);
-                    entry.ended.setTime(entry.started.getTime() + (15 * 60000));                    
+                    entry.ended.setTime(entry.started.getTime() + (15 * 60000));
                 }
                 entry.hours = hoursFromRange(entry.started, entry.ended);
                 entry.userId = data[i].userId;

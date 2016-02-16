@@ -16,6 +16,7 @@ namespace WeltyAutomation.M2M.QueryData {
         public string SaleNo { get; set; }
         public string Description { get; set; }
         public bool Active { get; set; }
+        public decimal OpeningHours { get; set; }
 
         public string FormattedDescription {
             get
