@@ -176,6 +176,7 @@
 
         var hoursEntry = e.container.find("#hoursEntry").getKendoNumericTextBox();
         hoursEntry.bind("spin", function () { setEnd(e, this); });
+        hoursEntry.bind("change", function () { setEnd(e, this); });
 
         var startEntry = e.container.find("#startEntry").getKendoDateTimePicker();
         startEntry.bind("close", function () { setHours(e); });

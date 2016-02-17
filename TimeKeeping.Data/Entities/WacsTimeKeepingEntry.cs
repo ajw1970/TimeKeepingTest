@@ -15,6 +15,6 @@ namespace WeltyAutomation.M2M.QueryData {
         public int UserId { get; set; }
         public int ProjectId { get; set; }
         public DateTimeOffset Started { get; set; }
-        public DateTimeOffset? Ended { get; set; }
+        public DateTimeOffset Ended { get; set; }
     }
 }
