@@ -19,7 +19,7 @@ namespace ClearstreamWeb.Controllers {
         private int departmentAdminId {
             get {
                 var admin = db.Users
-                    .Where(u => u.Department == user.Department && u.IsDepartmentAdmin)
+                    .Where(u => u.DepartmentId == user.DepartmentId && u.IsDepartmentAdmin)
                     .OrderBy(u => u.Id)
                     .FirstOrDefault();
 

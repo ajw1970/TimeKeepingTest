@@ -11,22 +11,22 @@ namespace ClearstreamWeb.Controllers {
     public class TimeKeepingUsersController : ApiController {
         ITimeKeepingRepository db = TestTimeKeepingRepository.Instance;
 
-        private string adminDepartment {
+        private int adminDepartmentId {
             get {
                 var admin = db.GetAdminUserByName(User.Identity.Name);
 
                 if (admin == null) {
-                    return null;
+                    return 0;
                 }
 
-                return admin.Department;
+                return admin.DepartmentId;
             }
         }
 
         // GET api/TimeKeepingUsers
         public IEnumerable<WacsTimeKeepingUser> Get() {
             var query = db.Users
-                .Where(u => u.Department == adminDepartment)
+                .Where(u => u.DepartmentId == adminDepartmentId)
                 .OrderBy(u => u.DisplayName);
             return query.ToList();
         }
@@ -35,7 +35,7 @@ namespace ClearstreamWeb.Controllers {
         [HttpGet]
         public WacsTimeKeepingUser Get(int id) {
             return db.Users
-                .Where(u => u.Department == adminDepartment && u.Id.Equals(id))
+                .Where(u => u.DepartmentId == adminDepartmentId && u.Id.Equals(id))
                 .FirstOrDefault();
         }
 
@@ -43,8 +43,8 @@ namespace ClearstreamWeb.Controllers {
         [HttpPost]
         [ActionName("TimeKeepingUsers")]
         public WacsTimeKeepingUser Post([FromBody]WacsTimeKeepingUser postedUser) {
-            var adminDepartment = this.adminDepartment;
-            if (adminDepartment == null) {
+            var adminDepartmentId = this.adminDepartmentId;
+            if (adminDepartmentId == 0) {
                 return null;
             }
 
@@ -60,7 +60,7 @@ namespace ClearstreamWeb.Controllers {
                 Id = 0,
                 Login = postedUser.Login,
                 DisplayName = postedUser.DisplayName,
-                Department = adminDepartment,
+                DepartmentId = adminDepartmentId,
                 IsDepartmentAdmin = false
             };
             db.AddUser(newUser);
@@ -73,7 +73,7 @@ namespace ClearstreamWeb.Controllers {
         [ActionName("TimeKeepingUsers")]
         public void Put([FromBody]WacsTimeKeepingUser updatedUser) {
             var existingUser = db.Users
-                .Where(u => u.Department == adminDepartment && u.Id == updatedUser.Id)
+                .Where(u => u.DepartmentId == adminDepartmentId && u.Id == updatedUser.Id)
                 .FirstOrDefault();
 
             if (existingUser == null) {
@@ -90,7 +90,7 @@ namespace ClearstreamWeb.Controllers {
         [ActionName("TimeKeepingUsers")]
         public void Delete(int id) {
             var existingUser = db.Users
-                .Where(u => u.Department == adminDepartment && u.Id == id)
+                .Where(u => u.DepartmentId == adminDepartmentId && u.Id == id)
                 .FirstOrDefault();
 
             if (existingUser != null) {

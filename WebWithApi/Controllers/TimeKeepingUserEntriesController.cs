@@ -24,15 +24,15 @@ namespace ClearstreamWeb.Controllers {
                 return admin.Id;
             }
         }
-        private string userDepartment {
+        private int userDepartmentId {
             get {
                 var user = db.GetUserByName(User.Identity.Name);
 
                 if (user == null) {
-                    return null;
+                    return 0;
                 }
 
-                return user.Department;
+                return user.DepartmentId;
             }
         }
 

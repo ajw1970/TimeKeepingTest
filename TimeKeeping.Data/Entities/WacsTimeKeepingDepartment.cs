@@ -7,14 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace WeltyAutomation.M2M.QueryData {
-    [Table("WacsTimeKeepingUsers")]
-    public class WacsTimeKeepingUser
-    {
+    [Table("WacsTimeKeepingDepartment")]
+    public class WacsTimeKeepingDepartment {
         [Key]
         public int Id { get; set; }
-        public string Login { get; set; }
-        public string DisplayName { get; set; }
-        public int DepartmentId { get; set; }
-        public bool IsDepartmentAdmin { get; set; }
+        public string Name { get; set; }
     }
 }

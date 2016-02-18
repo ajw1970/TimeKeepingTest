@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\WacsTimeKeepingDepartment.cs" />
     <Compile Include="Entities\WacsTimeKeepingEntry.cs" />
     <Compile Include="Entities\WacsTimeKeepingProject.cs" />
     <Compile Include="Entities\WacsTimeKeepingUser.cs" />
