@@ -41,7 +41,8 @@
     </style>
 }
 
-@if (ViewBag.IsTimeAdmin) {
+@if (ViewBag.IsTimeAdmin)
+{
     @Html.ActionLink("Admin", "Admin", null, new { @class = "btn btn-default btn-sm btn-primary" })
 }
 

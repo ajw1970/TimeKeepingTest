@@ -1,7 +1,4 @@
-﻿/// <reference path="../../kendo/2015.3.1111/jquery.min.js" />
-/// <reference path="../../kendo/2015.3.1111/kendo.all.min.js" />
-
-var userEntriesSchedulerModel = new kendo.data.SchedulerEvent.define({
+﻿var userEntriesSchedulerModel = new kendo.data.SchedulerEvent.define({
     id: "id",
     fields: {
         id: {

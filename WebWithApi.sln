@@ -5,7 +5,15 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebWithApi", "WebWithApi\WebWithApi.csproj", "{228A23FD-75AB-4B9B-9986-B88F6CEF84CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeKeeping.Data", "TimeKeeping.Data\TimeKeeping.Data.csproj", "{9C7C4A8F-E03C-4794-A060-E82F5400C3A1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Referenced", "Referenced", "{BC6EB7A0-F2CF-4900-86BF-9F89362B9378}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeKeeping.Application", "TimeKeeping.Application\TimeKeeping.Application.csproj", "{F50FA562-F588-4122-995A-12952F27E97D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeKeeping.Entities", "TimeKeeping.Entities\TimeKeeping.Entities.csproj", "{93F78E8F-E860-47CF-A7EB-002CD904192D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeKeeping.Interfaces", "TimeKeeping.Interfaces\TimeKeeping.Interfaces.csproj", "{E1981A22-FEBC-4015-B28B-5534FDD486DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeKeeping.Utilities", "TimeKeeping.Utilities\TimeKeeping.Utilities.csproj", "{5AF19749-1975-48F8-A46C-C158CB09A668}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,12 +25,30 @@ Global
 		{228A23FD-75AB-4B9B-9986-B88F6CEF84CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{228A23FD-75AB-4B9B-9986-B88F6CEF84CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{228A23FD-75AB-4B9B-9986-B88F6CEF84CA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9C7C4A8F-E03C-4794-A060-E82F5400C3A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9C7C4A8F-E03C-4794-A060-E82F5400C3A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9C7C4A8F-E03C-4794-A060-E82F5400C3A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9C7C4A8F-E03C-4794-A060-E82F5400C3A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F50FA562-F588-4122-995A-12952F27E97D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F50FA562-F588-4122-995A-12952F27E97D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F50FA562-F588-4122-995A-12952F27E97D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F50FA562-F588-4122-995A-12952F27E97D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93F78E8F-E860-47CF-A7EB-002CD904192D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93F78E8F-E860-47CF-A7EB-002CD904192D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93F78E8F-E860-47CF-A7EB-002CD904192D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93F78E8F-E860-47CF-A7EB-002CD904192D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1981A22-FEBC-4015-B28B-5534FDD486DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1981A22-FEBC-4015-B28B-5534FDD486DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1981A22-FEBC-4015-B28B-5534FDD486DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1981A22-FEBC-4015-B28B-5534FDD486DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AF19749-1975-48F8-A46C-C158CB09A668}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AF19749-1975-48F8-A46C-C158CB09A668}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AF19749-1975-48F8-A46C-C158CB09A668}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AF19749-1975-48F8-A46C-C158CB09A668}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F50FA562-F588-4122-995A-12952F27E97D} = {BC6EB7A0-F2CF-4900-86BF-9F89362B9378}
+		{93F78E8F-E860-47CF-A7EB-002CD904192D} = {BC6EB7A0-F2CF-4900-86BF-9F89362B9378}
+		{E1981A22-FEBC-4015-B28B-5534FDD486DF} = {BC6EB7A0-F2CF-4900-86BF-9F89362B9378}
+		{5AF19749-1975-48F8-A46C-C158CB09A668} = {BC6EB7A0-F2CF-4900-86BF-9F89362B9378}
 	EndGlobalSection
 EndGlobal

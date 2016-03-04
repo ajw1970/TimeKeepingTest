@@ -1,101 +1,84 @@
-﻿using ClearstreamWeb.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
-using WeltyAutomation.M2M.QueryData;
+using System.Web.Http.Description;
+using WeltyAutomation.TimeKeeping.Entities;
+using WeltyAutomation.TimeKeeping.Interfaces;
 
-namespace ClearstreamWeb.Controllers {
-    public class TimeKeepingUsersController : ApiController {
-        ITimeKeepingRepository db = TestTimeKeepingRepository.Instance;
+namespace ClearstreamWeb.Controllers
+{
+    [System.Web.Mvc.OutputCache(Duration = 0)]
+    public class TimeKeepingUsersController : ApiController
+    {
+        private readonly ITimeKeepingApplication app;
 
-        private int adminDepartmentId {
-            get {
-                var admin = db.GetAdminUserByName(User.Identity.Name);
-
-                if (admin == null) {
-                    return 0;
-                }
-
-                return admin.DepartmentId;
-            }
+        public TimeKeepingUsersController(ITimeKeepingApplication app)
+        {
+            this.app = app;
         }
 
         // GET api/TimeKeepingUsers
-        public IEnumerable<WacsTimeKeepingUser> Get() {
-            var query = db.Users
-                .Where(u => u.DepartmentId == adminDepartmentId)
+        public IEnumerable<WacsTimeKeepingUser> Get()
+        {
+            return app.GetMyDepartmentUsers(User.Identity.Name)
                 .OrderBy(u => u.DisplayName);
-            return query.ToList();
         }
 
         // GET api/TimeKeepingUsers/5
         [HttpGet]
-        public WacsTimeKeepingUser Get(int id) {
-            return db.Users
-                .Where(u => u.DepartmentId == adminDepartmentId && u.Id.Equals(id))
-                .FirstOrDefault();
+        public WacsTimeKeepingUser Get(int id)
+        {
+            return app.GetUser(User.Identity.Name, userId: id);
         }
 
         // POST api/TimeKeepingUsers
         [HttpPost]
         [ActionName("TimeKeepingUsers")]
-        public WacsTimeKeepingUser Post([FromBody]WacsTimeKeepingUser postedUser) {
-            var adminDepartmentId = this.adminDepartmentId;
-            if (adminDepartmentId == 0) {
-                return null;
+        [ResponseType(typeof(WacsTimeKeepingUser))]
+        public async Task<IHttpActionResult> Post([FromBody]WacsTimeKeepingUser postedUser)
+        {
+            var newUser = app.AddUser(User.Identity.Name, postedUser);
+
+            if (newUser == null)
+            {
+                return InternalServerError();
             }
 
-            var existingUser = db.Users
-                .Where(u => u.Login.Equals(postedUser.Login))
-                .FirstOrDefault();
-
-            if (existingUser != null) {
-                return null;
-            }
-
-            var newUser = new WacsTimeKeepingUser {
-                Id = 0,
-                Login = postedUser.Login,
-                DisplayName = postedUser.DisplayName,
-                DepartmentId = adminDepartmentId,
-                IsDepartmentAdmin = false
-            };
-            db.AddUser(newUser);
-
-            return newUser;
+            return Ok(newUser);
         }
 
         // PUT api/TimeKeepingUsers/5
         [HttpPut]
         [ActionName("TimeKeepingUsers")]
-        public void Put([FromBody]WacsTimeKeepingUser updatedUser) {
-            var existingUser = db.Users
-                .Where(u => u.DepartmentId == adminDepartmentId && u.Id == updatedUser.Id)
-                .FirstOrDefault();
+        public async Task<IHttpActionResult> Put(int id, [FromBody]WacsTimeKeepingUser updatedUser)
+        {
+            var updatedOk = app.UpdateUser(User.Identity.Name, id, updatedUser);
 
-            if (existingUser == null) {
-                return;
+            if (updatedOk)
+            {
+                return Ok();
             }
 
-            existingUser.Login = updatedUser.Login;
-            existingUser.DisplayName = updatedUser.DisplayName;
-            db.UpdateUser(existingUser);
+            return InternalServerError();
         }
 
         // DELETE api/TimeKeepingUsers/5
         [HttpDelete]
         [ActionName("TimeKeepingUsers")]
-        public void Delete(int id) {
-            var existingUser = db.Users
-                .Where(u => u.DepartmentId == adminDepartmentId && u.Id == id)
-                .FirstOrDefault();
+        public async Task<IHttpActionResult> Delete(int id)
+        {
+            bool deleted = app.DeleteUser(User.Identity.Name, id);
 
-            if (existingUser != null) {
-                db.DeleteUser(existingUser.Id);
+            if (deleted)
+            {
+                return Ok();
             }
+
+            return InternalServerError();
         }
     }
 }

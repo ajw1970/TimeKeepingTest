@@ -1,5 +1,4 @@
-﻿using ClearstreamWeb.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -7,83 +6,43 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using WeltyAutomation.M2M.QueryData;
+using WeltyAutomation.TimeKeeping.Entities;
+using WeltyAutomation.TimeKeeping.Interfaces;
 
-namespace ClearstreamWeb.Controllers {
+namespace ClearstreamWeb.Controllers
+{
+    [System.Web.Mvc.OutputCache(Duration = 0)]
     public class TimeKeepingUserEntriesController : ApiController {
-        ITimeKeepingRepository db = TestTimeKeepingRepository.Instance;
+        private readonly ITimeKeepingApplication app;
 
-        private int departmentAdminId {
-            get {
-                var admin = db.GetAdminUserByName(User.Identity.Name);
-
-                if (admin == null) {
-                    return 0;
-                }
-
-                return admin.Id;
-            }
-        }
-        private int userDepartmentId {
-            get {
-                var user = db.GetUserByName(User.Identity.Name);
-
-                if (user == null) {
-                    return 0;
-                }
-
-                return user.DepartmentId;
-            }
-        }
-
-        private int userId {
-            get {
-                var user = db.GetUserByName(User.Identity.Name);
-
-                if (user == null) {
-                    return 0;
-                }
-
-                return user.Id;
-            }
+        public TimeKeepingUserEntriesController(ITimeKeepingApplication app)
+        {
+            this.app = app;
         }
 
         // GET api/TimeKeepingUserEntries
         public IEnumerable<WacsTimeKeepingEntry> Get() {
-            return db.Entries
-                 .Where(e => e.UserId == userId)
-                 .OrderBy(e => e.Started)
-                 .ToList();
+            return app.GetEntriesForUser(User.Identity.Name);
         }
+
+        //// GET api/TimeKeepingEntries/5
+        //[HttpGet]
+        //public WacsTimeKeepingEntry Get(int id) {
+        //    return db.WacsTimeKeepingProjects
+        //        .Where(p => p.CreatedByUserId == departmentAdminId && p.Id.Equals(id))
+        //        .FirstOrDefault();
+        //}
 
         // POST api/TimeKeepingUserEntries
         [HttpPost]
         [ActionName("TimeKeepingUserEntries")]
         [ResponseType(typeof(WacsTimeKeepingEntry))]
         public async Task<IHttpActionResult> Post([FromBody]WacsTimeKeepingEntry postedEntry) {
-            var departmentAdminId = this.departmentAdminId;
-            if (departmentAdminId == 0) {
+            var newEntry = app.AddEntryForUser(User.Identity.Name, postedEntry);
+            if (newEntry == null)
+            {
                 return InternalServerError();
             }
-
-            var existingProject = db.Projects
-                .Where(p =>
-                         p.CreatedByUserId == departmentAdminId &&
-                         p.Id == postedEntry.ProjectId)
-                .FirstOrDefault();
-            if (existingProject == null) {
-                return InternalServerError();
-            }
-
-            var newEntry = new WacsTimeKeepingEntry {
-                Id = 0,
-                UserId = userId,
-                ProjectId = postedEntry.ProjectId,
-                Started = postedEntry.Started,
-                Ended = postedEntry.Ended
-            };
-            db.AddEntry(newEntry);
-
             return Ok(newEntry);
         }
 
@@ -91,36 +50,25 @@ namespace ClearstreamWeb.Controllers {
         [HttpPut]
         [ActionName("TimeKeepingUserEntries")]
         public async Task<IHttpActionResult> Put(int id, [FromBody]WacsTimeKeepingEntry updatedEntry) {
-            var existingEntry = db.Entries
-                .Where(e => e.Id == id && e.UserId == userId)
-                .FirstOrDefault();
-
-            if (existingEntry == null) {
+            if (app.UpdateEntry(User.Identity.Name, id, updatedEntry)) { 
+                return Ok();
+            } else
+            {
                 return InternalServerError();
             }
-
-            existingEntry.Started = updatedEntry.Started;
-            existingEntry.Ended = updatedEntry.Ended;
-            existingEntry.ProjectId = updatedEntry.ProjectId;
-            db.UpdateEntry(existingEntry);
-            return Ok();
         }
 
         // DELETE api/TimeKeepingUserEntries/5
         [HttpDelete]
         [ActionName("TimeKeepingUserEntries")]
         public async Task<IHttpActionResult> Delete(int id) {
-            var existingEntry = db.Entries
-                .Where(e => e.Id == id && e.UserId == userId)
-                .FirstOrDefault();
-
-            if (existingEntry == null) {
+            if (app.DeleteEntry(id))
+            {
+                return Ok();
+            } else
+            {
                 return InternalServerError();
             }
-
-            db.DeleteEntry(existingEntry.Id);
-
-            return Ok();
         }
     }
 }

@@ -1,27 +1,26 @@
-﻿var url = "/api/TimeKeepingProjects/";
+﻿var projectsUrl = "/api/TimeKeepingProjects/";
 
 var projectsDataSource = new kendo.data.DataSource({
     schema: {
         model: projectsModel
     },
     transport: {
-        read: url,
+        read: projectsUrl,
         update: {
             url: function (data) {
-                debugger;
-                return url + data.id;
+                return projectsUrl + data.id;
             },
             contentType: "application/json",
             type: "PUT"
         },
         create: {
-            url: url,
+            url: projectsUrl,
             contentType: "application/json",
             type: "POST"
         },
         destroy: {
             url: function (data) {
-                return url + data.id;
+                return projectsUrl + data.id;
             },
             contentType: "application/json",
             type: "DELETE",

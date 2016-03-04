@@ -1,26 +1,26 @@
-﻿var url = "/api/TimeKeepingUserEntries/";
+﻿var entriesUrl = "/api/TimeKeepingUserEntries/";
 
 var userEntriesDataSource = new kendo.data.DataSource({
     schema: {
         model: userEntriesModel
     },
     transport: {
-        read: url,
+        read: entriesUrl,
         update: {
             url: function (data) {
-                return url + data.id;
+                return entriesUrl + data.id;
             },
             contentType: "application/json",
             type: "PUT"
         },
         create: {
-            url: url,
+            url: entriesUrl,
             contentType: "application/json",
             type: "POST"
         },
         destroy: {
             url: function (data) {
-                return url + data.Id;
+                return entriesUrl + data.Id;
             },
             contentType: "application/json",
             type: "DELETE",
